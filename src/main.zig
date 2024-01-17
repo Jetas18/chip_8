@@ -6,11 +6,13 @@ const sdl = @cImport({
 
 const process = std.process;
 
-const chip8 = @import("chip8.zig");
+const CHIP8 = @import("chip8.zig");
 
 var window: ?*sdl.SDL_Window = null;
 var renderer: ?*sdl.SDL_Renderer = null;
 var texture: ?*sdl.SDL_Texture = null;
+
+var cpu: *CHIP8 = undefined;
 
 pub fn init() !void {
     if (sdl.SDL_Init() < 0) {
@@ -46,10 +48,13 @@ pub fn main() !void {
     defer arena.deinit();
 
     const allocator = arena.allocator();
-    _ = allocator;
 
     init();
     defer deinit();
+
+    cpu = try allocator.create(CHIP8);
+
+    cpu.init();
 
     var keep_open = true;
 
